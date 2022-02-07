@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "TicTacToeGameModeBase.generated.h"
 
+class ATile;
+
 /**
  * 
  */
@@ -25,6 +27,8 @@ public:
 	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 
 	void SetClicked();
+
+	virtual bool OnTileClaimed(ATile* Tile, FString OwnerName);
 
 private:
 	bool ended;

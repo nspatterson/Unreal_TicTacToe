@@ -2,10 +2,10 @@
 
 
 #include "Tile.h"
-#include "TicTacToeGameModeBase.h"
 #include "TTTPlayerController.h"
 #include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 #include "GameFramework/PlayerState.h"
+#include "TicTacToeGameModeBase.h"
 
 // Sets default values
 ATile::ATile()
@@ -41,28 +41,19 @@ void ATile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void ATile::ClaimTile(AActor* claimer)
 {
-	if (!IsOpen())
-	{
-		return;
-	}
+	if (!GWorld) return;
+	if (!IsOpen()) return;
 
 	ATicTacToeGameModeBase* gm = (ATicTacToeGameModeBase*)GWorld->GetAuthGameMode();
-
-	if (gm)
-	{
-		// TODO:
-		// Send to GameMode for tracking
-		gm->SetClicked();
-	}
+	if (!gm) return;
 
 	// Log player network index (some reason all 0)
 	ATTTPlayerController* pc = (ATTTPlayerController*)claimer;
 
-	if (pc)
+	FString claimedBy = pc->GetPlayerState<APlayerState>()->GetPlayerName();
+	if (pc && gm->OnTileClaimed(this, claimedBy))
 	{
-		ClaimedBy = pc->GetPlayerState<APlayerState>()->GetPlayerName();
-
-		APlayerState* ps = pc->GetPlayerState<APlayerState>();
+		ClaimedBy = claimedBy;
 
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Claimed by: " + FString::FromInt(pc->Player->GetUniqueID())));
 	}

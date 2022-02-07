@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTileClaimedDelegate, const ATile*, Tile, const FString, OwnerName);
+
 UCLASS()
 class TICTACTOE_API ATile : public AActor
 {
@@ -41,4 +43,7 @@ public:
 	void ClaimTile(AActor*);
 
 	bool IsOpen();
+
+	UPROPERTY()
+	FTileClaimedDelegate OnTileClaimed;
 };

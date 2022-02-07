@@ -3,6 +3,7 @@
 
 #include "TicTacToeGameModeBase.h"
 #include "TTTPlayerController.h"
+#include "Tile.h"
 
 ATicTacToeGameModeBase::ATicTacToeGameModeBase() : AGameModeBase()
 {
@@ -45,4 +46,13 @@ APlayerController* ATicTacToeGameModeBase::Login(UPlayer* NewPlayer, ENetRole In
 void ATicTacToeGameModeBase::SetClicked()
 {
 	ended = true;
+}
+
+bool ATicTacToeGameModeBase::OnTileClaimed(ATile* Tile, FString OwnerName)
+{
+	GEngine->AddOnScreenDebugMessage(1, 15, FColor::Blue, OwnerName);
+
+	// TODO: block if it's not our turn
+
+	return true;
 }
