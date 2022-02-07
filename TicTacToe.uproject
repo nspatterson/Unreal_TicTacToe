@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{49EF7447-4D62-C2D3-464F-61955BB9599C}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "TicTacToe",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
