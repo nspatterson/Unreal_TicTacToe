@@ -28,34 +28,22 @@ void ATile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ATile, ClaimedBy);
 }
 
-//void ATile::OnRep_ClaimedBy()
-//{
-//	FEditorScriptExecutionGuard ScriptGuard; // Supposed to allow events to fire in editor but doesn't work
-//	{
-//		//BPEvent_OnClaimed(ClaimedBy);
-//	}
-//
-//	//GEngine->AddOnScreenDebugMessage(1, 2.5f, FColor::Red, TEXT("id: " + ClaimedBy));
-//	
-//}
-
 void ATile::ClaimTile(AActor* claimer)
 {
 	if (!GWorld) return;
 	if (!IsOpen()) return;
 
-	ATicTacToeGameModeBase* gm = (ATicTacToeGameModeBase*)GWorld->GetAuthGameMode();
-	if (!gm) return;
-
-	// Log player network index (some reason all 0)
 	ATTTPlayerController* pc = (ATTTPlayerController*)claimer;
 
-	FString claimedBy = pc->GetPlayerState<APlayerState>()->GetPlayerName();
-	if (pc && gm->OnTileClaimed(this, claimedBy))
+	if (pc)
 	{
-		ClaimedBy = claimedBy;
+		ClaimedBy = pc->GetPlayerState<APlayerState>()->GetPlayerName();
 
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Claimed by: " + FString::FromInt(pc->Player->GetUniqueID())));
+		if (OnTileClaimed.IsBound())
+		{
+			FEditorScriptExecutionGuard ScriptGuard;
+			OnTileClaimed.Broadcast(this, ClaimedBy);
+		}
 	}
 }
 
@@ -63,4 +51,3 @@ bool ATile::IsOpen()
 {
 	return ClaimedBy.IsEmpty();
 }
-

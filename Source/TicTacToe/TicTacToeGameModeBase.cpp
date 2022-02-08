@@ -3,6 +3,7 @@
 
 #include "TicTacToeGameModeBase.h"
 #include "TTTPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tile.h"
 
 ATicTacToeGameModeBase::ATicTacToeGameModeBase() : AGameModeBase()
@@ -48,11 +49,29 @@ void ATicTacToeGameModeBase::SetClicked()
 	ended = true;
 }
 
-bool ATicTacToeGameModeBase::OnTileClaimed(ATile* Tile, FString OwnerName)
+void ATicTacToeGameModeBase::OnTileClaimed(ATile* Tile, const FString OwnerName)
 {
-	GEngine->AddOnScreenDebugMessage(1, 15, FColor::Blue, OwnerName);
+	GEngine->AddOnScreenDebugMessage(1, 1, FColor::Blue, OwnerName);
+}
 
-	// TODO: block if it's not our turn
+void ATicTacToeGameModeBase::GetTiles()
+{
+	UGameplayStatics::GetAllActorsOfClass(GWorld, ATile::StaticClass(), Tiles);
+}
 
-	return true;
+void ATicTacToeGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetTiles();
+	BindTileDelegates();
+}
+
+void ATicTacToeGameModeBase::BindTileDelegates()
+{
+	for (auto It = Tiles.CreateIterator(); It; ++It)
+	{
+		ATile* tile = (ATile*)*It;
+		tile->OnTileClaimed.AddDynamic(this, &ATicTacToeGameModeBase::OnTileClaimed);
+	}
 }

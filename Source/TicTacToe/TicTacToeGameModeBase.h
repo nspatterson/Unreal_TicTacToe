@@ -28,7 +28,18 @@ public:
 
 	void SetClicked();
 
-	virtual bool OnTileClaimed(ATile* Tile, FString OwnerName);
+	UFUNCTION()
+	virtual void OnTileClaimed(ATile* Tile, const FString OwnerName);
+
+
+protected:
+	virtual void GetTiles();
+
+	virtual void BindTileDelegates();
+
+	virtual void BeginPlay() override;
+
+	TArray<AActor*> Tiles;
 
 private:
 	bool ended;
