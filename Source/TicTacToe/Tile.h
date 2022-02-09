@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	ATile();
 
+	FString GetClaimedBy();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,6 +44,7 @@ public:
 	// Set the tile to be owned by the actor
 	void ClaimTile(AActor*);
 
+	UFUNCTION(BlueprintCallable)
 	bool IsOpen();
 
 	UPROPERTY()

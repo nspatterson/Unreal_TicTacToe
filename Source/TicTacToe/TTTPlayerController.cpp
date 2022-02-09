@@ -2,6 +2,8 @@
 
 
 #include "TTTPlayerController.h"
+#include "TicTacToeGameState.h"
+#include "GameFramework/PlayerState.h"
 #include "Tile.h"
 
 void ATTTPlayerController::SetupInputComponent()
@@ -14,7 +16,11 @@ void ATTTPlayerController::SetupInputComponent()
 
 void ATTTPlayerController::ServerClaim_Implementation(ATile* tile)
 {
-	tile->ClaimTile(this);
+	ATicTacToeGameState* gs = (ATicTacToeGameState*)GWorld->GetGameState();
+	if (gs->HasMatchStarted() && PlayerState->GetPlayerName() == gs->GetPlayersTurn())
+	{
+		tile->ClaimTile(this);
+	}
 }
 
 void ATTTPlayerController::HandleClick()

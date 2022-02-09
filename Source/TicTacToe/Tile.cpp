@@ -6,6 +6,7 @@
 #include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 #include "GameFramework/PlayerState.h"
 #include "TicTacToeGameModeBase.h"
+#include "GameFramework/GameStateBase.h"
 
 // Sets default values
 ATile::ATile()
@@ -41,7 +42,7 @@ void ATile::ClaimTile(AActor* claimer)
 
 		if (OnTileClaimed.IsBound())
 		{
-			FEditorScriptExecutionGuard ScriptGuard;
+			//FEditorScriptExecutionGuard ScriptGuard;
 			OnTileClaimed.Broadcast(this, ClaimedBy);
 		}
 	}
@@ -50,4 +51,9 @@ void ATile::ClaimTile(AActor* claimer)
 bool ATile::IsOpen()
 {
 	return ClaimedBy.IsEmpty();
+}
+
+FString ATile::GetClaimedBy()
+{
+	return ClaimedBy;
 }
