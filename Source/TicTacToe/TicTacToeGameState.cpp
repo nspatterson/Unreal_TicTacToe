@@ -8,6 +8,7 @@
 ATicTacToeGameState::ATicTacToeGameState()
 {
 	PlayerTurnName = TEXT("None");
+	MatchResult = None;
 }
 
 FString ATicTacToeGameState::GetPlayersTurn()
@@ -19,6 +20,7 @@ void ATicTacToeGameState::SetStaringPlayerIndex(int32 Index)
 {
 	TurnIndex = FMath::Clamp(Index, 0, 1);
 	PlayerTurnName = PlayerArray[TurnIndex].Get()->GetPlayerName();
+	
 }
 
 void ATicTacToeGameState::SwitchPlayerTurn()
@@ -30,6 +32,7 @@ void ATicTacToeGameState::SwitchPlayerTurn()
 		TurnIndex = 0;
 	}
 
+	LastPlayerTurn = PlayerTurnName;
 	PlayerTurnName = PlayerArray[TurnIndex].Get()->GetPlayerName();
 }
 
@@ -39,6 +42,8 @@ void ATicTacToeGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ATicTacToeGameState, TurnIndex);
 	DOREPLIFETIME(ATicTacToeGameState, MatchState);
 	DOREPLIFETIME(ATicTacToeGameState, PlayerTurnName);
+	DOREPLIFETIME(ATicTacToeGameState, LastPlayerTurn);
+	DOREPLIFETIME(ATicTacToeGameState, MatchResult);
 }
 
 bool ATicTacToeGameState::HasMatchStarted() const
@@ -66,5 +71,28 @@ void ATicTacToeGameState::OnRep_PlayerTurnName()
 	if (OnPlayerTurnChanged.IsBound())
 	{
 		OnPlayerTurnChanged.Broadcast(PlayerTurnName);
+	}
+}
+
+void ATicTacToeGameState::SetMatchResult(TEnumAsByte<EMatchResult> Result)
+{
+	MatchResult = Result;
+}
+
+TEnumAsByte<EMatchResult> ATicTacToeGameState::GetMatchResult()
+{
+	return MatchResult;
+}
+
+FString ATicTacToeGameState::GetWinner()
+{
+	return LastPlayerTurn;
+}
+
+void ATicTacToeGameState::OnRep_MatchResult()
+{
+	if (OnMatchResult.IsBound())
+	{
+		OnMatchResult.Broadcast(MatchResult);
 	}
 }

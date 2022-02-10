@@ -77,7 +77,7 @@ protected:
 	FName MatchState;
 
 private:
-	bool ended;
+	bool bEnded;
 
 	int32 TurnCount;
 

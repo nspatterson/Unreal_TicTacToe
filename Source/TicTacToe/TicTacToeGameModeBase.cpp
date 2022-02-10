@@ -57,12 +57,12 @@ bool CheckColumns(TArray<AActor*> * Tiles)
 bool CheckCross(TArray<AActor*>* Tiles)
 {
 	auto tiles = *Tiles;
-	if (CheckTiles((ATile*)tiles[0], (ATile*)tiles[5], (ATile*)tiles[8]))
+	if (CheckTiles((ATile*)tiles[0], (ATile*)tiles[4], (ATile*)tiles[8]))
 	{
 		return true;
 	}
 
-	if (CheckTiles((ATile*)tiles[2], (ATile*)tiles[5], (ATile*)tiles[6]))
+	if (CheckTiles((ATile*)tiles[2], (ATile*)tiles[4], (ATile*)tiles[6]))
 	{
 		return true;
 	}
@@ -99,7 +99,7 @@ ATicTacToeGameModeBase::ATicTacToeGameModeBase() : AGameModeBase()
 	PrimaryActorTick.bCanEverTick = true;
 	MatchState = TTTMatchState::WaitingForPlayers;
 	TurnCount = 0;
-	ended = false;
+	bEnded = false;
 }
 
 bool ATicTacToeGameModeBase::HasMatchEnded() const
@@ -122,12 +122,14 @@ bool ATicTacToeGameModeBase::ShouldEndMatch()
 	if (CheckBoard(&Tiles))
 	{
 		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, LastPlayer + TEXT(" WINNER"));
+		((ATicTacToeGameState*)GameState)->SetMatchResult(Winner);
 		return true;
 	}
 
 	if (TurnCount == 9)
 	{
 		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("CATS!! MEOW MEOW"));
+		((ATicTacToeGameState*)GameState)->SetMatchResult(Cats);
 		return true;
 	}
 	return false;
@@ -178,6 +180,7 @@ void ATicTacToeGameModeBase::Logout(AController* Exiting)
 {
 	if (HasMatchStarted() && !HasMatchEnded())
 	{
+		((ATicTacToeGameState*)GameState)->SetMatchResult(Abandoned);
 		SetMatchState(TTTMatchState::Abandoned);
 	}
 
@@ -191,7 +194,7 @@ APlayerController* ATicTacToeGameModeBase::Login(UPlayer* NewPlayer, ENetRole In
 
 void ATicTacToeGameModeBase::SetClicked()
 {
-	ended = true;
+	bEnded = true;
 }
 
 void ATicTacToeGameModeBase::OnTileClaimed(ATile* Tile, const FString OwnerName)
@@ -205,6 +208,10 @@ void ATicTacToeGameModeBase::OnTileClaimed(ATile* Tile, const FString OwnerName)
 void ATicTacToeGameModeBase::GetTiles()
 {
 	UGameplayStatics::GetAllActorsOfClass(GWorld, ATile::StaticClass(), Tiles);
+	Tiles.Sort([](const AActor& LHS, const AActor& RHS)
+	{
+		return ((ATile&)LHS).GetIndex() > ((ATile&)RHS).GetIndex();
+	});
 }
 
 void ATicTacToeGameModeBase::BeginPlay()

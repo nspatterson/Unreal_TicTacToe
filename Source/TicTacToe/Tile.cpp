@@ -87,3 +87,8 @@ void ATile::OnPlayerTurnChanged(const FString NewPlayer)
 		BP_OnPlayerChanged(false);
 	}
 }
+
+uint8 ATile::GetIndex()
+{
+	return Index;
+}
