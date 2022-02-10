@@ -25,13 +25,16 @@ protected:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	/*UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnClaimed"))
-	void BPEvent_OnClaimed(int32 claimer);
-	void BPEvent_OnClaimed_Implementation(int32 claimer);*/
-
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnClaimed"))
 	void OnRep_ClaimedBy();
 	void OnRep_ClaimedBy_Implementation();
+
+	UFUNCTION()
+	void OnPlayerTurnChanged(const FString NewPlayer);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnPlayerChanged"))
+	void BP_OnPlayerChanged(bool IsUs);
+	void BP_OnPlayerChanged_Implementation(bool IsUs);
 
 	//This should be replicated
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_ClaimedBy)

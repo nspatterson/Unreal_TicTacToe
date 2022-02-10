@@ -6,6 +6,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "TicTacToeGameState.generated.h"
 
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTileClaimedDelegate, ATile*, Tile, const FString, OwnerName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerTurnChangedDelegate, const FString, PlayerTurnName);
+
 /**
  * 
  */
@@ -30,6 +33,11 @@ public:
 	virtual bool HasMatchEnded() const override;
 
 	virtual void SetMatchState(FName NewMatchState);
+
+	virtual FName GetMatchState();
+
+	UPROPERTY()
+	FPlayerTurnChangedDelegate OnPlayerTurnChanged;
 
 protected:
 

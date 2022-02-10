@@ -56,7 +56,15 @@ void ATicTacToeGameState::SetMatchState(FName NewMatchState)
 	MatchState = NewMatchState;
 }
 
+FName ATicTacToeGameState::GetMatchState()
+{
+	return MatchState;
+}
+
 void ATicTacToeGameState::OnRep_PlayerTurnName()
 {
-	// TODO: create some event
+	if (OnPlayerTurnChanged.IsBound())
+	{
+		OnPlayerTurnChanged.Broadcast(PlayerTurnName);
+	}
 }

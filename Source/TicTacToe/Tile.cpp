@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "TicTacToeGameModeBase.h"
 #include "GameFramework/GameStateBase.h"
+#include "TicTacToeGameState.h"
 
 // Sets default values
 ATile::ATile()
@@ -21,6 +22,13 @@ ATile::ATile()
 void ATile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GWorld)
+	{
+		auto gs = (ATicTacToeGameState*)GWorld->GetGameState();
+
+		gs->OnPlayerTurnChanged.AddDynamic(this, &ATile::OnPlayerTurnChanged);
+	}
 }
 
 void ATile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -56,4 +64,26 @@ bool ATile::IsOpen()
 FString ATile::GetClaimedBy()
 {
 	return ClaimedBy;
+}
+
+void ATile::OnPlayerTurnChanged(const FString NewPlayer)
+{
+	auto pc = GEngine->GetFirstLocalPlayerController(GWorld);
+	if (!pc) return;
+
+	auto ps = pc->GetPlayerState<APlayerState>();
+	auto gs = (ATicTacToeGameState*)GWorld->GetGameState();
+
+	if (gs->GetMatchState() == FName("MatchEnded") || gs->GetMatchState() == FName("Abandoned"))
+	{
+		BP_OnPlayerChanged(false);
+	}
+	else if (ps && ps->GetPlayerName() == NewPlayer)
+	{
+		BP_OnPlayerChanged(true);
+	}
+	else
+	{
+		BP_OnPlayerChanged(false);
+	}
 }

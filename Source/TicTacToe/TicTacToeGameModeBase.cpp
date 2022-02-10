@@ -121,13 +121,13 @@ bool ATicTacToeGameModeBase::ShouldEndMatch()
 {
 	if (CheckBoard(&Tiles))
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, LastPlayer + TEXT(" WINNER"));
+		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, LastPlayer + TEXT(" WINNER"));
 		return true;
 	}
 
 	if (TurnCount == 9)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("CATS!! MEOW MEOW"));
+		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("CATS!! MEOW MEOW"));
 		return true;
 	}
 	return false;
@@ -172,6 +172,16 @@ void ATicTacToeGameModeBase::PreLogin(const FString& Options, const FString& Add
 	if (GetNumPlayers() == 2) {
 		ErrorMessage = TEXT("Room is full NERD!!!!");
 	}
+}
+
+void ATicTacToeGameModeBase::Logout(AController* Exiting)
+{
+	if (HasMatchStarted() && !HasMatchEnded())
+	{
+		SetMatchState(TTTMatchState::Abandoned);
+	}
+
+	Super::Logout(Exiting);
 }
 
 APlayerController* ATicTacToeGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
@@ -223,6 +233,4 @@ void ATicTacToeGameModeBase::SetMatchState(FName NewMatchState)
 {
 	MatchState = NewMatchState;
 	((ATicTacToeGameState*)GameState)->SetMatchState(MatchState);
-
-	//GEngine->AddOnScreenDebugMessage(2, 3, FColor::Magenta, NewMatchState.ToString());
 }
