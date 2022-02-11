@@ -189,6 +189,7 @@ void ATicTacToeGameModeBase::Logout(AController* Exiting)
 
 APlayerController* ATicTacToeGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Num Players: %d"), GetNumPlayers());
 	return Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 }
 

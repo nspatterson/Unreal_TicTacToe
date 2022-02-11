@@ -10,7 +10,7 @@ UENUM()
 enum EMatchResult
 {
 	None		UMETA(DisplayName = "None"),
-	Winner		UMETA(DisplayName = "Winning"),
+	Winner		UMETA(DisplayName = "Winner"),
 	Cats		UMETA(DisplayName = "Cats"),
 	Abandoned	UMETA(DisplayName = "Abandoned")
 };
