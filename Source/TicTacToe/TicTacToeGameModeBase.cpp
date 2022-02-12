@@ -3,6 +3,7 @@
 
 #include "TicTacToeGameModeBase.h"
 #include "TTTPlayerController.h"
+#include "TicTacToeGameSession.h"
 #include "Kismet/GameplayStatics.h"
 #include "TicTacToeGameState.h"
 #include "Tile.h"
@@ -94,6 +95,7 @@ ATicTacToeGameModeBase::ATicTacToeGameModeBase() : AGameModeBase()
 {
 	PlayerControllerClass = ATTTPlayerController::StaticClass();
 	GameStateClass = ATicTacToeGameState::StaticClass();
+	GameSessionClass = ATicTacToeGameSession::StaticClass();
 
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
