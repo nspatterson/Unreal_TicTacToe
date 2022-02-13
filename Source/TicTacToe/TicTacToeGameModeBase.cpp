@@ -140,9 +140,9 @@ bool ATicTacToeGameModeBase::ShouldEndMatch()
 void ATicTacToeGameModeBase::StartMatch()
 {
 	ATicTacToeGameState* gs = (ATicTacToeGameState*)GameState;
-
 	gs->SetStaringPlayerIndex(FMath::RandRange(0, 1));
 
+	GameSession->HandleMatchHasStarted();
 	SetMatchState(TTTMatchState::WaitingForMove);
 }
 
@@ -152,11 +152,17 @@ void ATicTacToeGameModeBase::Tick(float DeltaSeconds)
 	{
 		if (HasMatchEnded())
 		{
-			return; ShouldEndMatch();
+			if (!PostGameTimer.IsValid())
+			{
+				GetWorldTimerManager().SetTimer(PostGameTimer, this, &ATicTacToeGameModeBase::RemovePlayersAfterGameEnd, 5);
+			}
+
+			return;
 		}
 
 		if (ShouldEndMatch())
 		{
+			GameSession->HandleMatchHasEnded();
 			SetMatchState(TTTMatchState::MatchEnded);
 		}
 	}
@@ -243,4 +249,9 @@ void ATicTacToeGameModeBase::SetMatchState(FName NewMatchState)
 {
 	MatchState = NewMatchState;
 	((ATicTacToeGameState*)GameState)->SetMatchState(MatchState);
+}
+
+void ATicTacToeGameModeBase::RemovePlayersAfterGameEnd()
+{
+	GameSession->ReturnToMainMenuHost();
 }

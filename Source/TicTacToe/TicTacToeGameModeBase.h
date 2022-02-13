@@ -72,6 +72,8 @@ protected:
 
 	virtual void StartMatch();
 
+	void RemovePlayersAfterGameEnd();
+
 	TArray<AActor*> Tiles;
 
 	FName MatchState;
@@ -82,4 +84,6 @@ private:
 	int32 TurnCount;
 
 	FString LastPlayer;
+
+	FTimerHandle PostGameTimer;
 };
