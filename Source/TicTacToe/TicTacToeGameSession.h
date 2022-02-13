@@ -6,6 +6,8 @@
 #include "GameFramework/GameSession.h"
 #include "TicTacToeGameSession.generated.h"
 
+class FGameLiftServerSDKModule;
+struct FProcessParameters;
 /**
  * 
  */
@@ -13,6 +15,8 @@ UCLASS()
 class TICTACTOE_API ATicTacToeGameSession : public AGameSession
 {
 	GENERATED_BODY()
+
+	ATicTacToeGameSession();
 
 	// Call Process Ready to notify Gamelift
 	virtual void RegisterServer() override;
@@ -27,4 +31,9 @@ class TICTACTOE_API ATicTacToeGameSession : public AGameSession
 
 	// TODO: Need to create callback method to handle OnTerminate from AWS Gamelift
 	// Send players back to main menu with message that server was shutdown
+
+protected:
+	FGameLiftServerSDKModule* GameLiftSdkModule;
+
+	FProcessParameters* Params;
 };

@@ -70,5 +70,9 @@ Saved/*
 Intermediate/*
 Plugins/*/Intermediate/*
 
+# Gamelift Specific
+# Consider updating to avoid having to reinstall SDK everytime it's cloned
+Plugins/GameLiftServerSDK/
+
 # Cache files for the editor to use
 DerivedDataCache/*

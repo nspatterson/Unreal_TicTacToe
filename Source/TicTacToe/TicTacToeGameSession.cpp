@@ -3,12 +3,41 @@
 
 #include "TicTacToeGameSession.h"
 #include "TicTacToeInstanceSubsystem.h"
+#include "GameLiftServerSDK.h"
+
+ATicTacToeGameSession::ATicTacToeGameSession()
+{
+#if WITH_GAMELIFT
+	GameLiftSdkModule = &FModuleManager::LoadModuleChecked<FGameLiftServerSDKModule>(FName("GameLiftServerSDK"));
+	GameLiftSdkModule->InitSDK();
+
+	auto onGameSession = [=](Aws::GameLift::Server::Model::GameSession gameSession)
+	{
+		GameLiftSdkModule->ActivateGameSession();
+	};
+
+	Params = new FProcessParameters();
+	Params->OnStartGameSession.BindLambda(onGameSession);
+
+	// TODO: Create a method below to handle termination
+	Params->OnTerminate.BindLambda([=]() {GameLiftSdkModule->ProcessEnding(); });
+
+	Params->OnHealthCheck.BindLambda([]() {return true; });
+
+	// Should figure out how to dynamically set this
+	// https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-engines-setup-unreal.html
+	Params->port = 7777;
+#endif
+}
 
 void ATicTacToeGameSession::RegisterServer()
 {
 	UE_LOG(LogTemp, Warning, TEXT("REGISTER MY DUDE"));
-	// TODO: Call ProcessReady in AWS SDK to notify Gamelift server is ready to accept connections
-	// Not if we need to register with online subsystm (I don't think so though)
+
+#if WITH_GAMELIFT
+	// TODO: Consider moving the gamelift dependant stuff into a custom OnlineSubSystem
+	GameLiftSdkModule->ProcessReady(*Params);
+#endif
 
 	UGameInstance* GameInstance = GetGameInstance();
 	UTicTacToeInstanceSubsystem* ss = GameInstance->GetSubsystem<UTicTacToeInstanceSubsystem>();
