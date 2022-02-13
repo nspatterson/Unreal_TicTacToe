@@ -14,6 +14,17 @@ class TICTACTOE_API ATicTacToeGameSession : public AGameSession
 {
 	GENERATED_BODY()
 
+	// Call Process Ready to notify Gamelift
 	virtual void RegisterServer() override;
+
+	// Override this so we can verify with AWS that incoming player has reserved session
+	// Return error message to reject or empty string to accept
+	virtual FString ApproveLogin(const FString& Options) override;
 	
+	// Override this so we can NotifyLogout for Gamelift
+	// Call ProcessEnd to shut down after all players have left
+	virtual void UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& UniqueId);
+
+	// TODO: Need to create callback method to handle OnTerminate from AWS Gamelift
+	// Send players back to main menu with message that server was shutdown
 };
