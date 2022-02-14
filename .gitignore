@@ -76,3 +76,7 @@ Plugins/GameLiftServerSDK/
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# ClientServices
+TicTacToe Client Service/bin
+TicTacToe Client Service/obj
