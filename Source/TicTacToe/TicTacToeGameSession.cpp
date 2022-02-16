@@ -4,10 +4,15 @@
 #include "TicTacToeGameSession.h"
 #include "TicTacToeInstanceSubsystem.h"
 #include "GameLiftServerSDK.h"
+#include "Kismet/GameplayStatics.h"
+#include "TTTPlayerController.h"
+
+//#define WITH_GAMELIFT 1
 
 ATicTacToeGameSession::ATicTacToeGameSession()
 {
 #if WITH_GAMELIFT
+	UE_LOG(LogTemp, Warning, TEXT("Initializing GameLift..."));
 	GameLiftSdkModule = &FModuleManager::LoadModuleChecked<FGameLiftServerSDKModule>(FName("GameLiftServerSDK"));
 	GameLiftSdkModule->InitSDK();
 
@@ -32,10 +37,9 @@ ATicTacToeGameSession::ATicTacToeGameSession()
 
 void ATicTacToeGameSession::RegisterServer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("REGISTER MY DUDE"));
-
 #if WITH_GAMELIFT
 	// TODO: Consider moving the gamelift dependant stuff into a custom OnlineSubSystem
+	UE_LOG(LogTemp, Warning, TEXT("Registering with GameLift..."));
 	GameLiftSdkModule->ProcessReady(*Params);
 #endif
 
@@ -50,14 +54,36 @@ void ATicTacToeGameSession::RegisterServer()
 
 FString ATicTacToeGameSession::ApproveLogin(const FString& Options)
 {
-	// TODO: Implement checking with AWS SDK
-	return Super::ApproveLogin(Options);
+	bool bSuccess = true;
+	FString Message = TEXT("");
+
+#if WITH_GAMELIFT
+	FString SessionId = UGameplayStatics::ParseOption(Options, TEXT("SessionId"));
+	FGameLiftGenericOutcome Outcome = GameLiftSdkModule->AcceptPlayerSession(SessionId);
+	bSuccess = Outcome.IsSuccess();
+	Message = Outcome.GetError().m_errorMessage;
+	UE_LOG(LogTemp, Warning, TEXT("Approved login for session: %s"), *SessionId);
+#endif
+
+	return bSuccess ? Super::ApproveLogin(Options) : Message;
 }
 
 void ATicTacToeGameSession::UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& UniqueId)
 {
-	// TODO: RemoveSession with AWS
-
 	// TODO: If GameSession->GetPlayerNum() == 0 EndProcess
 	Super::UnregisterPlayer(InSessionName, UniqueId);
+}
+
+void ATicTacToeGameSession::UnregisterPlayer(const APlayerController* ExitingPlayer)
+{
+#if WITH_GAMELIFT
+	auto pc = (ATTTPlayerController*)ExitingPlayer;
+	FString SessionId = pc->GetSessionId();
+	if (SessionId.Len() > 0)
+	{
+		GameLiftSdkModule->RemovePlayerSession(SessionId);
+		UE_LOG(LogTemp, Warning, TEXT("Removed login for session: %s"), *SessionId);
+	}
+#endif
+	Super::UnregisterPlayer(ExitingPlayer);
 }

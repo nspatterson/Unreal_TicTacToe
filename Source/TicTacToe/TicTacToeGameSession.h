@@ -29,6 +29,9 @@ class TICTACTOE_API ATicTacToeGameSession : public AGameSession
 	// Call ProcessEnd to shut down after all players have left
 	virtual void UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& UniqueId);
 
+	// Override this so we can NotifyLogout for Gamelift
+	virtual void UnregisterPlayer(const APlayerController* ExitingPlayer);
+
 	// TODO: Need to create callback method to handle OnTerminate from AWS Gamelift
 	// Send players back to main menu with message that server was shutdown
 

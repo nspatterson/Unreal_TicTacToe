@@ -197,8 +197,13 @@ void ATicTacToeGameModeBase::Logout(AController* Exiting)
 
 APlayerController* ATicTacToeGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Num Players: %d"), GetNumPlayers());
-	return Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+	ATTTPlayerController* pc = (ATTTPlayerController*)Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+
+	if (pc && UGameplayStatics::HasOption(Options, TEXT("SessionId")))
+	{
+		pc->SetSessionId(UGameplayStatics::ParseOption(Options, TEXT("SessionId")));
+	}
+	return pc;
 }
 
 void ATicTacToeGameModeBase::SetClicked()

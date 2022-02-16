@@ -15,6 +15,13 @@ class TICTACTOE_API ATTTPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	// Used by the server
+	void SetSessionId(const FString& NewSessionId);
+
+	// Used by the server
+	FString GetSessionId() const;
+
 protected:
 	virtual void SetupInputComponent() override;
 
@@ -23,4 +30,7 @@ protected:
 	void ServerClaim_Implementation(ATile* tile);
 
 	void HandleClick();
+
+	// Used by the server
+	FString SessionId;
 };

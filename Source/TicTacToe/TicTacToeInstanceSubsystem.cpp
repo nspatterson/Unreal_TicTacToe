@@ -5,6 +5,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Online/HTTP/Public/Http.h"
 
 void UTicTacToeInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -37,14 +38,70 @@ void UTicTacToeInstanceSubsystem::CreateSession()
 
 void UTicTacToeInstanceSubsystem::FindSession()
 {
-	SessionSearch = MakeShareable(new FOnlineSessionSearch());
+	// For reference
+	// https://www.davidykay.com/UE4-Hello-Http/?fbclid=IwAR0Ej3bR37vjwOEHIr60izilcGFpR38xSVHZEUNkANxZXhJ7miMntn1tV8s
+	auto http = &FHttpModule::Get();
+	auto request = http->CreateRequest();	
 
-	if (SessionSearch.IsValid())
+	request->OnProcessRequestComplete().BindLambda([=](FHttpRequestPtr requestptr, FHttpResponsePtr responseptr, bool bWasSuccesssful)
 	{
-		SessionSearch->MaxSearchResults = 100;
-		SessionSearch->QuerySettings.Set(SEARCH_DEDICATED_ONLY, true, EOnlineComparisonOp::Equals);
-		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-	}
+			// TODO:
+			// 1. Create Custom FUniqueNetId class
+			// 2. Parse information from web api
+			// 3. Set TTTLocalPlayer Name/FUniqueNetId class
+			// 4. Remove OnlineSubsession stuff
+			// 5. Refactor/structure code to be more organized
+			/*if (bWasSuccesssful)
+			{
+				GEngine->AddOnScreenDebugMessage(1, 2, FColor::Orange, "Success");
+				UGameInstance* GameInstance = GetGameInstance();
+				APlayerController* pc = GameInstance->GetFirstLocalPlayerController();
+
+				if (pc)
+				{
+					FString URL = "192.168.0.126:7777?Name=CumLazer?Feck=ohFeck";
+					pc->ClientTravel(URL, ETravelType::TRAVEL_Absolute);
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(1, 2, FColor::Orange, "Fail");
+			}*/
+
+			// TODO: Uncommnent later when API side is finished
+			// Reference: https://www.davidykay.com/UE4-Hello-Http/?fbclid=IwAR0Ej3bR37vjwOEHIr60izilcGFpR38xSVHZEUNkANxZXhJ7miMntn1tV8s
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(responseptr->GetContentAsString());
+
+			if (FJsonSerializer::Deserialize(Reader, JsonObject))
+			{
+				FString Address = JsonObject->GetStringField("ipAddress");
+				FString Port = JsonObject->GetStringField("port");
+				FString SessionId = JsonObject->GetStringField("playerSessionId");
+				FString URL = (Address == "127.0.0.1" ? "192.168.0.126" : Address) + ":" + Port + "?SessionId=" + SessionId;
+
+				UGameInstance* GameInstance = GetGameInstance();
+				APlayerController* pc = GameInstance->GetFirstLocalPlayerController();
+
+				if (pc)
+				{
+					pc->ClientTravel(URL, ETravelType::TRAVEL_Absolute);
+				}
+				else
+				{
+					GEngine->AddOnScreenDebugMessage(1, 2, FColor::Orange, "No Player Controller");
+				}
+			}
+			else {
+				GEngine->AddOnScreenDebugMessage(1, 2, FColor::Orange, "Failed to deserialized");
+			}
+	});
+
+	request->SetVerb("GET");
+	request->SetURL("http://localhost:65476/weatherforecast"); 
+	request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
+	request->SetHeader("Content-Type", TEXT("application/json"));
+	request->ProcessRequest();
 }
 
 void UTicTacToeInstanceSubsystem::EndSession(FName SessionName)

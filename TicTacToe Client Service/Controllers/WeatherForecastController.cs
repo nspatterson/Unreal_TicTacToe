@@ -16,11 +16,6 @@ namespace TicTacToe_Client_Service.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<WeatherForecastController> _logger;
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
@@ -28,21 +23,8 @@ namespace TicTacToe_Client_Service.Controllers
             _logger = logger;
         }
 
-        //[HttpGet]
-        //public IEnumerable<WeatherForecast> Get()
-        //{
-        //    var rng = new Random();
-        //    return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        //    {
-        //        Date = DateTime.Now.AddDays(index),
-        //        TemperatureC = rng.Next(-20, 55),
-        //        Summary = Summaries[rng.Next(Summaries.Length)] + Oink.FleetId
-        //    })
-        //    .ToArray();
-        //}
-
         [HttpGet]
-        public async Task<string>Get()
+        public async Task<IActionResult>Get()
         {
             var gameSession = await Oink.DescribeGameSesion(Oink.FleetId);
             var playerId = Guid.NewGuid().ToString();
@@ -50,35 +32,32 @@ namespace TicTacToe_Client_Service.Controllers
             if (gameSession is null)
             {
 #if LOCAL
-                var session = await Oink.CreateGameSession(Oink.FleetId, playerId);
-
-                return session?.GameSession is null ?
-                    "Unable to create game session" :
-                    $"{session.GameSession.IpAddress}:{session.GameSession.Port}";
+                var createSession = await Oink.CreateGameSession(Oink.FleetId, playerId);
+                gameSession = createSession.GameSession;
+                //return Ok(createSession?.GameSession is null ?
+                //    "Unable to create game session" :
+                //    $"{createSession.GameSession.IpAddress}:{createSession.GameSession.Port}");
 #else
                 var session = await Oink.StartGameSessionPlacement(Oink.FleetId, playerId);
 
                 if(session.Status == GameSessionPlacementState.FULFILLED)
                 {
-                    return session.PlacedPlayerSessions.FirstOrDefault(x => x.PlayerId == playerId).PlayerSessionId ?? "Not Found";
+                    return Ok(session.PlacedPlayerSessions.FirstOrDefault(x => x.PlayerId == playerId).PlayerSessionId ?? "Not Found");
                 }
                 else
                 {
-                    return "No Session Placement Found";
+                    return Ok("No Session Placement Found");
                 }
 #endif
             }
-            else
+            var playerSessionResponse = await Oink.CreatePlayerSession(gameSession, playerId, "Name");
+
+            if (playerSessionResponse is null)
             {
-                var playerSessionResponse = await Oink.CreatePlayerSession(gameSession, playerId, "Name");
-
-                if(playerSessionResponse is null)
-                {
-                    return "No Player Session Found";
-                }
-
-                return $"{playerSessionResponse.PlayerSession.IpAddress}:{playerSessionResponse.PlayerSession.Port}";
+                return Ok("No Player Session Found");
             }
+
+            return Ok(playerSessionResponse.PlayerSession);
         }
     }
 

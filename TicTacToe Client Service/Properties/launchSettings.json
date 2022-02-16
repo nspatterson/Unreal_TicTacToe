@@ -5,13 +5,13 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:65476",
-      "sslPort": 44398
+      //"sslPort": 44398
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -19,7 +19,7 @@
     },
     "TicTacToe_Client_Service": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "weatherforecast",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {

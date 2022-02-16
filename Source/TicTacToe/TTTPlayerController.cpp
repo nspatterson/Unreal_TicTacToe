@@ -6,6 +6,16 @@
 #include "GameFramework/PlayerState.h"
 #include "Tile.h"
 
+void ATTTPlayerController::SetSessionId(const FString& NewSessionId)
+{
+	SessionId = NewSessionId;
+}
+
+FString ATTTPlayerController::GetSessionId() const
+{
+	return SessionId;
+}
+
 void ATTTPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
