@@ -34,9 +34,6 @@ namespace TicTacToe_Client_Service.Controllers
 #if LOCAL
                 var createSession = await Oink.CreateGameSession(Oink.FleetId, playerId);
                 gameSession = createSession.GameSession;
-                //return Ok(createSession?.GameSession is null ?
-                //    "Unable to create game session" :
-                //    $"{createSession.GameSession.IpAddress}:{createSession.GameSession.Port}");
 #else
                 var session = await Oink.StartGameSessionPlacement(Oink.FleetId, playerId);
 
@@ -57,6 +54,7 @@ namespace TicTacToe_Client_Service.Controllers
                 return Ok("No Player Session Found");
             }
 
+            _logger.Log(LogLevel.Information, $"Created player session Id: {playerSessionResponse.PlayerSession.PlayerSessionId}");
             return Ok(playerSessionResponse.PlayerSession);
         }
     }
