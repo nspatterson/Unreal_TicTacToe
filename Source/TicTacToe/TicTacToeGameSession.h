@@ -32,10 +32,14 @@ class TICTACTOE_API ATicTacToeGameSession : public AGameSession
 	// Override this so we can NotifyLogout for Gamelift
 	virtual void UnregisterPlayer(const APlayerController* ExitingPlayer);
 
+	virtual void BeginPlay() override;
+
 	// TODO: Need to create callback method to handle OnTerminate from AWS Gamelift
 	// Send players back to main menu with message that server was shutdown
 
 protected:
+	UFUNCTION()
+	void OnGameOver();
 	FGameLiftServerSDKModule* GameLiftSdkModule;
 
 	FProcessParameters* Params;

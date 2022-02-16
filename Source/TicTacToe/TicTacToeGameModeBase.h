@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "TicTacToeGameModeBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameOverDelegate);
+
 class ATile;
 
 namespace TTTMatchState
@@ -54,6 +56,9 @@ public:
 	UFUNCTION()
 	virtual void OnTileClaimed(ATile* Tile, const FString OwnerName);
 
+	UPROPERTY(BlueprintAssignable)
+	FGameOverDelegate OnGameOver;
+
 
 protected:
 	virtual void GetTiles();
@@ -72,11 +77,15 @@ protected:
 
 	virtual void StartMatch();
 
-	void RemovePlayersAfterGameEnd();
+	// Trigger to remove any remaining clients and shut down server
+	void TriggerGameOver();
 
 	TArray<AActor*> Tiles;
 
 	FName MatchState;
+
+	UPROPERTY(EditAnywhere)
+	float EndGameTimer;
 
 private:
 	bool bEnded;

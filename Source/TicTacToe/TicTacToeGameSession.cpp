@@ -6,6 +6,7 @@
 #include "GameLiftServerSDK.h"
 #include "Kismet/GameplayStatics.h"
 #include "TTTPlayerController.h"
+#include "TicTacToeGameModeBase.h"
 
 //#define WITH_GAMELIFT 1
 
@@ -25,7 +26,7 @@ ATicTacToeGameSession::ATicTacToeGameSession()
 	Params->OnStartGameSession.BindLambda(onGameSession);
 
 	// TODO: Create a method below to handle termination
-	Params->OnTerminate.BindLambda([=]() {GameLiftSdkModule->ProcessEnding(); });
+	Params->OnTerminate.BindLambda([=]() { OnGameOver(); });
 
 	Params->OnHealthCheck.BindLambda([]() {return true; });
 
@@ -42,14 +43,6 @@ void ATicTacToeGameSession::RegisterServer()
 	UE_LOG(LogTemp, Warning, TEXT("Registering with GameLift..."));
 	GameLiftSdkModule->ProcessReady(*Params);
 #endif
-
-	UGameInstance* GameInstance = GetGameInstance();
-	UTicTacToeInstanceSubsystem* ss = GameInstance->GetSubsystem<UTicTacToeInstanceSubsystem>();
-
-	if (ss)
-	{
-		ss->CreateSession();
-	}
 }
 
 FString ATicTacToeGameSession::ApproveLogin(const FString& Options)
@@ -70,7 +63,6 @@ FString ATicTacToeGameSession::ApproveLogin(const FString& Options)
 
 void ATicTacToeGameSession::UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& UniqueId)
 {
-	// TODO: If GameSession->GetPlayerNum() == 0 EndProcess
 	Super::UnregisterPlayer(InSessionName, UniqueId);
 }
 
@@ -87,3 +79,24 @@ void ATicTacToeGameSession::UnregisterPlayer(const APlayerController* ExitingPla
 #endif
 	Super::UnregisterPlayer(ExitingPlayer);
 }
+
+void ATicTacToeGameSession::BeginPlay()
+{
+#if WITH_GAMELIFT
+	ATicTacToeGameModeBase* gm = (ATicTacToeGameModeBase*)GWorld->GetAuthGameMode();
+
+	if (gm)
+	{
+		gm->OnGameOver.AddDynamic(this, &ATicTacToeGameSession::OnGameOver);
+	}
+#endif
+}
+
+void ATicTacToeGameSession::OnGameOver()
+{
+	GameLiftSdkModule->ProcessEnding();
+	ReturnToMainMenuHost();
+
+	RequestEngineExit(TEXT("Game is over..."));
+}
+

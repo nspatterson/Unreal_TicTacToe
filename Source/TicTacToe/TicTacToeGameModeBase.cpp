@@ -102,6 +102,7 @@ ATicTacToeGameModeBase::ATicTacToeGameModeBase() : AGameModeBase()
 	MatchState = TTTMatchState::WaitingForPlayers;
 	TurnCount = 0;
 	bEnded = false;
+	EndGameTimer = 5.0f;
 }
 
 bool ATicTacToeGameModeBase::HasMatchEnded() const
@@ -154,7 +155,7 @@ void ATicTacToeGameModeBase::Tick(float DeltaSeconds)
 		{
 			if (!PostGameTimer.IsValid())
 			{
-				GetWorldTimerManager().SetTimer(PostGameTimer, this, &ATicTacToeGameModeBase::RemovePlayersAfterGameEnd, 5);
+				GetWorldTimerManager().SetTimer(PostGameTimer, this, &ATicTacToeGameModeBase::TriggerGameOver, EndGameTimer);
 			}
 
 			return;
@@ -256,7 +257,10 @@ void ATicTacToeGameModeBase::SetMatchState(FName NewMatchState)
 	((ATicTacToeGameState*)GameState)->SetMatchState(MatchState);
 }
 
-void ATicTacToeGameModeBase::RemovePlayersAfterGameEnd()
+void ATicTacToeGameModeBase::TriggerGameOver()
 {
-	GameSession->ReturnToMainMenuHost();
+	if (OnGameOver.IsBound())
+	{
+		OnGameOver.Broadcast();
+	}
 }
