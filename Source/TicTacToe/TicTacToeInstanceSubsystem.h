@@ -26,18 +26,4 @@ public:
 	virtual void FindSession();
 
 	virtual void EndSession(FName SessionName);
-
-protected:
-	virtual void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
-
-	virtual void OnFindSessionsComplete(bool bWasSuccessful);
-
-	virtual void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
-	virtual void OnEndSessionComplete(FName SessionName, bool bWasSuccessful);
-
-protected:
-	IOnlineSessionPtr SessionInterface;
-
-	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 };

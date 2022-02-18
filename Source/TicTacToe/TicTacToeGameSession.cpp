@@ -32,7 +32,7 @@ ATicTacToeGameSession::ATicTacToeGameSession()
 
 	// Should figure out how to dynamically set this
 	// https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-engines-setup-unreal.html
-	Params->port = GWorld->URL.Port;
+	//Params->port = GWorld->URL.Port;
 #endif
 }
 
@@ -41,6 +41,9 @@ void ATicTacToeGameSession::RegisterServer()
 #if WITH_GAMELIFT
 	// TODO: Consider moving the gamelift dependant stuff into a custom OnlineSubSystem
 	UE_LOG(LogTemp, Warning, TEXT("Registering with GameLift..."));
+	// Should figure out how to dynamically set this
+	// https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-engines-setup-unreal.html
+	Params->port = GWorld->URL.Port;
 
 	GameLiftSdkModule->ProcessReady(*Params);
 #endif
