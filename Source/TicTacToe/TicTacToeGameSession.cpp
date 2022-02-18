@@ -43,10 +43,6 @@ void ATicTacToeGameSession::RegisterServer()
 	UE_LOG(LogTemp, Warning, TEXT("Registering with GameLift..."));
 
 	GameLiftSdkModule->ProcessReady(*Params);
-	if (GWorld->URL.Port)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PORT: %d"), GWorld->URL.Port);
-	}
 #endif
 }
 
