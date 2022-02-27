@@ -80,3 +80,7 @@ DerivedDataCache/*
 # ClientServices
 TicTacToe Client Service/bin
 TicTacToe Client Service/obj
+
+# Client Lambda
+TicTacToeLambda/bin
+TicTacToeLambda/obj

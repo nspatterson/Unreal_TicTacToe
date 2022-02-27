@@ -65,7 +65,7 @@ namespace TicTacToe_Client_Service.Controllers
         private static AmazonGameLiftClient AwsClient;
 
         // TODO: Research where FleetId comes from. It's probably the ID of my other gamelift project
-        public static string FleetId = "fleet-96e1e46d-e329-4296-af71-525b16031331";
+        public static string FleetId = "fleet-0fb30784-9b9f-4a36-ad20-b53f96ff26df";
 
         static Oink()
         {
@@ -73,8 +73,8 @@ namespace TicTacToe_Client_Service.Controllers
             var config = new AmazonGameLiftConfig();
             config.RegionEndpoint = RegionEndpoint.USEast1;
 #if LOCAL
-            config.ServiceURL = "http://localhost:9080";
-            config.UseHttp = true;
+            //config.ServiceURL = "http://localhost:9080";
+            //config.UseHttp = true;
 #endif
             // TODO: Research how credientials are configured on EC2 instances and other cloud services
             AWSCredentials credentials;
