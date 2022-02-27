@@ -39,7 +39,7 @@ void ATTTPlayerController::HandleClick()
 
 	if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, hr))
 	{
-		ATile* tile = (ATile*)hr.GetActor();
+		ATile* tile = Cast<ATile>(hr.GetActor());
 		if (tile)
 		{
 			if (HasAuthority() && tile->IsOpen())
