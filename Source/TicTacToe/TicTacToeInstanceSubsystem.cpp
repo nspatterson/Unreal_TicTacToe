@@ -26,6 +26,11 @@ void UTicTacToeInstanceSubsystem::FindSession()
 
 	request->OnProcessRequestComplete().BindLambda([=](FHttpRequestPtr requestptr, FHttpResponsePtr responseptr, bool bWasSuccesssful)
 	{
+		if(!bWasSuccesssful)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Game Request Failed"));
+			return;
+		}
 
 		// Reference: https://www.davidykay.com/UE4-Hello-Http/?fbclid=IwAR0Ej3bR37vjwOEHIr60izilcGFpR38xSVHZEUNkANxZXhJ7miMntn1tV8s
 		TSharedPtr<FJsonObject> JsonObject;
@@ -56,7 +61,8 @@ void UTicTacToeInstanceSubsystem::FindSession()
 	});
 
 	request->SetVerb("GET");
-	request->SetURL("http://localhost:65476/weatherforecast"); 
+	//request->SetURL("http://localhost:65476/weatherforecast"); // LOCAL URL
+	request->SetURL("https://ctwjo8d44f.execute-api.us-east-1.amazonaws.com/dev"); // LIVE URL
 	request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
 	request->SetHeader("Content-Type", TEXT("application/json"));
 	request->ProcessRequest();

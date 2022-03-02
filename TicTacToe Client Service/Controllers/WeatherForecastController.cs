@@ -65,7 +65,7 @@ namespace TicTacToe_Client_Service.Controllers
         private static AmazonGameLiftClient AwsClient;
 
         // TODO: Research where FleetId comes from. It's probably the ID of my other gamelift project
-        public static string FleetId = "fleet-0fb30784-9b9f-4a36-ad20-b53f96ff26df";
+        public static string FleetId = "fleet-899cf40c-bf58-47fd-96c6-dbd6d150b7b8";
 
         static Oink()
         {
