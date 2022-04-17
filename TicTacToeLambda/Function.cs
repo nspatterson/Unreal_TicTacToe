@@ -34,32 +34,18 @@ namespace TicTacToeLambda
         /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
+        [LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+        public async Task<PlayerSession> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
             try
             {
                 var playerSession = await GetPlayerSession();
 
-                if (playerSession is null)
-                {
-                    return new APIGatewayProxyResponse
-                    {
-                        StatusCode = 404
-                    };
-                }
-
-                return new APIGatewayProxyResponse
-                {
-                    StatusCode = 200,
-                    Body = JsonSerializer.Serialize(playerSession),
-                };
+                return playerSession?.PlayerSession;
             }
             catch
             {
-                return new APIGatewayProxyResponse
-                {
-                    StatusCode = 404
-                };
+                return null;
             }
             //var playerSession = await GetPlayerSession();
 

@@ -19,6 +19,7 @@
     "function-role"        : "arn:aws:iam::870399563402:role/GameLiftLambdaRole",
     "function-architecture" : "x86_64",
     "tracing-mode"          : "PassThrough",
-    "environment-variables" : "\"FleetId\"=\"asdfasdfsadf\"",
-    "image-tag"             : ""
+    "environment-variables" : "\"FleetId\"=\"fleet-899cf40c-bf58-47fd-96c6-dbd6d150b7b8\"",
+    "image-tag"             : "",
+    "function-description"  : ""
 }
